@@ -4,8 +4,8 @@ def connect_database():
     connection = mysql.connector.connect(
         host="localhost",
         user="root",
-        password="Preethu@2005",  # Replace with your MySQL root password
-        database="employee_payroll"  # Replace with your database name
+        password="your_password_here",  # Replace with your MySQL root password
+        database="database_name_here"  # Replace with your database name
     )
     return connection
 
