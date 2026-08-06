@@ -12,29 +12,6 @@ def connect_database():
 connection = connect_database()
 cursor = connection.cursor()
 
-query = """INSERT INTO employee(
-    employee_id,
-    name,
-    age,
-    dept,
-    designation,
-     salary
-)VALUES(%s, %s, %s, %s, %s, %s)"""
-
-cursor.execute(query,(
-    employee_id,
-    name,
-    age,
-    dept,
-    designation,
-    salary
-) )
-
-connection.commit()
-
-cursor.close()
-connection.close()
-
 connection = connect_database()
 cursor = connection.cursor()
 
@@ -235,7 +212,7 @@ while choice != "9":
 
         if cursor.rowcount == 0:
                     print("Employee not found")
-                    
+
         cursor.close()
         connection.close()
 
@@ -279,18 +256,26 @@ while choice != "9":
     elif choice == "8":
         print("Dept.wise employees")
         dept = input("Enter dept name:")
-        found = False
-        for emp in employees:
-            if emp.dept == dept:
-                found = True
-                print("Employee id: ", emp.employee_id)
-                print("Name: ", emp.name)
-                print("Age: ", emp.age)
-                print("Dept: ", emp.dept)
-                print("Designation: ", emp.designation)
-                print("Salary: ", emp.salary)
-        if not found:
+        connection = connect_database()
+        cursor = connection.cursor()
+
+        query = """SELECT * FROM employee WHERE dept = %s"""
+        cursor.execute(query,(dept,))
+        employees = cursor.fetchall()
+
+        if not employees:
             print("Employee not found")
+        else:
+            for emp in employees:
+                print("Employee id: ", emp[0])
+                print("Name: ", emp[1])
+                print("Age: ", emp[2])
+                print("Dept: ", emp[3])
+                print("Designation: ", emp[4])
+                print("Salary: ", emp[5])
+
+        cursor.close()
+        connection.close()
         print()
     elif choice == "9":
         print("Thank you fro using Employee payroll management system")
