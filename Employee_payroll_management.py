@@ -1,5 +1,13 @@
+"""Employee payroll management CLI script.
+
+This simple script demonstrates a command-line employee payroll
+management system with CRUD operations and salary calculations.
+"""
+
+
 class Employee:
     def __init__(self, employee_id, name, age, dept, designation, salary):
+        # Basic employee fields
         self.employee_id = employee_id
         self.name = name
         self.age = age
@@ -9,32 +17,36 @@ class Employee:
 
 
 def calculate_salary(emp):
-        bonus = 0
-        tax = 0
-        net_salary = 0
+    bonus = 0
+    tax = 0
+    net_salary = 0
 
-        if emp.salary >= 50000:
-            bonus = emp.salary*10/100
-        else:
-            bonus = emp.salary*5/100
+    # Determine bonus percentage based on salary threshold
+    if emp.salary >= 50000:
+        bonus = emp.salary * 10 / 100
+    else:
+        bonus = emp.salary * 5 / 100
 
-        if emp.salary >= 70000:
-            tax = emp.salary*15/100
-        elif emp.salary >= 40000:
-            tax = emp.salary*10/100
-        else:
-            tax = emp.salary*5/100
+    # Determine tax percentage based on salary bands
+    if emp.salary >= 70000:
+        tax = emp.salary * 15 / 100
+    elif emp.salary >= 40000:
+        tax = emp.salary * 10 / 100
+    else:
+        tax = emp.salary * 5 / 100
 
-        net_salary = emp.salary + bonus - tax
+    # Net salary after applying bonus and subtracting tax
+    net_salary = emp.salary + bonus - tax
 
-        return bonus, tax, net_salary
+    return bonus, tax, net_salary
 
+# In-memory list of Employee instances used by the CLI
 employees = []
 
 
-print("=" *40)
+print("=" * 40)
 print("EMPLOYEE PAYROLL MANAGEMENT SYSTEM")
-print("=" *40)
+print("=" * 40)
 
 choice = ""
 while choice != "9":
@@ -51,6 +63,7 @@ while choice != "9":
     choice = input(" Enter your choice: ")
 
     if choice == "1":
+        # Add a new employee: gather input and append to the list
         employee_id = int(input("Enter employee_id:"))
         name = input("Enter employee name: ")
         age = int(input("Enter employee age:"))
@@ -60,7 +73,9 @@ while choice != "9":
         emp = Employee(employee_id, name, age, dept, designation, salary)
         employees.append(emp)
         print("Employee Added successfully")
-        print()
+        print("\n")
+
+    # Display all employees in the system
     elif choice == "2":
         print("----View employees----")
         print("----------------------")
@@ -75,7 +90,9 @@ while choice != "9":
             print("Designation: ", emp.designation)
             print("Salary: ", emp.salary)
         print("----------------------")
-    elif choice == "3":    
+        print("\n")
+    # Search for an employee by employee_id and show details
+    elif choice == "3":
         employee_id = int(input("Enter employee_id:"))
         found = False
         for emp in employees:
@@ -87,11 +104,13 @@ while choice != "9":
                 print("Dept: ", emp.dept)
                 print("Designation: ", emp.designation)
                 print("Salary: ", emp.salary)
-                
+
                 break
         if not found:
             print("Employees Not Found ")
-        print()
+        print("\n")
+
+    # Update an existing employee's attributes
     elif choice == "4":
         employee_id = int(input("Enter employee_id:"))
         found = False
@@ -119,11 +138,13 @@ while choice != "9":
                     print("Salary updated")
                 else:
                     print("Invalid choice")
-                    
+
                 break
         if not found:
             print("Employee not found")
-        print()
+        print("\n")
+
+    # Delete an employee by id
     elif choice == "5":
         employee_id = int(input("Enter employee_id:"))
         found = False
@@ -132,12 +153,14 @@ while choice != "9":
                 found = True
                 employees.remove(emp)
                 print("Deleted successfully")
-                
+
                 break
 
         if not found:
             print("Employee not found")
-        print()
+        print("\n")
+
+    # Calculate and display salary breakdown for one employee
     elif choice == "6":
         employee_id = int(input("Enter employee_id:"))
         found = False
@@ -153,7 +176,9 @@ while choice != "9":
                 break
         if not found:
             print("Employee not found")
-        print()
+        print("\n")
+
+    # Find and display the highest-paid employee
     elif choice == "7":
         print("Highest paid Employee is :")
         if not employees:
@@ -170,8 +195,10 @@ while choice != "9":
             print("Dept:", highest.dept)
             print("Designation:", highest.designation)
             print("Salary:", highest.salary)
-                
-        print()
+
+        print("\n")
+
+    # List employees filtered by department
     elif choice == "8":
         print("Dept.wise employees")
         dept = input("Enter dept name:")
@@ -187,10 +214,12 @@ while choice != "9":
                 print("Salary: ", emp.salary)
         if not found:
             print("Employee not found")
-        print()
+        print("\n")
+
+    # Exit the program
     elif choice == "9":
-        print("Thank you fro using Employee payroll management system")
-        print()
+        print("Thank you for using Employee payroll management system")
+        print("\n")
     else:
         print("Invalid choice")
      
