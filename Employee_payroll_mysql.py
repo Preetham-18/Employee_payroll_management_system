@@ -4,8 +4,8 @@ def connect_database():
     connection = mysql.connector.connect(
         host="localhost",
         user="root",
-        password="Your_password_here",
-        database="database_name_here"
+        password="Preethu@2005",
+        database="employee_payroll"
     )
     return connection
 
@@ -152,7 +152,7 @@ while choice != "9":
         emp = cursor.fetchone()
 
         if not emp:
-            print("No employees so found")
+            print("Employee not found")
         else:
             print("----------------------")
             print("Employee id: ", emp[0])
@@ -167,48 +167,79 @@ while choice != "9":
         print()
     elif choice == "4":
         employee_id = int(input("Enter employee_id:"))
-        found = False
-        for emp in employees:
-            if employee_id == emp.employee_id:
-                found = True
-                print("1. Update name")
-                print("2. Update age")
-                print("3. Update Dept")
-                print("4. Update salary")
 
-                update_choice = input("Enter your choice:")
+        connection = connect_database()
+        cursor = connection.cursor()
 
-                if update_choice == "1":
-                    emp.name = input("Enter new name:")
-                    print("Name updated")
-                elif update_choice == "2":
-                    emp.age = int(input("Enter new age:"))
-                    print("Age updated")
-                elif update_choice == "3":
-                    emp.dept = input("Enter new dept:")
-                    print("Dept updated")
-                elif update_choice == "4":
-                    emp.salary = int(input("Enter new salary:"))
-                    print("Salary updated")
-                else:
-                    print("Invalid choice")
-                    
-                break
-        if not found:
+        query = """SELECT * FROM employee WHERE employee_id = %s """
+
+        cursor.execute(query,(employee_id,))
+        emp = cursor.fetchone()
+
+        if not emp:
             print("Employee not found")
+        else:
+            print("1. Update name")
+            print("2. Update age")
+            print("3. Update Dept")
+            print("4. Update salary")
+
+            update_choice = input("Enter your choice:")
+
+            if update_choice == "1":
+                new_name = input("Enter new name:")
+                query = """UPDATE employee SET name = %s WHERE employee_id = %s"""
+
+                cursor.execute(query,( new_name, employee_id))
+                connection.commit()
+                print("Name updated successfully")
+            elif update_choice == "2":
+                new_age = int(input("Enter new age:"))
+                query = """UPDATE employee SET age = %s WHERE employee_id = %s"""
+
+                cursor.execute(query,(new_age, employee_id))
+                connection.commit()
+                print("Age updated successfully")
+            elif update_choice ==  "3":
+                new_dept = input("Enter new dept:")
+                query = """UPDATE employee SET dept = %s WHERE employee_id = %s"""
+
+                cursor.execute(query,(new_dept, employee_id))
+                connection.commit()
+
+                print("Dept updated successfully")
+            elif update_choice == "4":
+                new_salary = int(input("Enter new salary:"))
+                query = """UPDATE employee SET salary = %s WHERE employee_id = %s"""
+
+                cursor.execute(query,(new_salary, employee_id))
+                connection.commit()
+                print("Salary updated successfully")
+            else:
+                print("Invalid choice")
+
+            cursor.close()
+            connection.close()
+            
         print()
     elif choice == "5":
         employee_id = int(input("Enter employee_id:"))
-        found = False
-        for emp in employees:
-            if employee_id == emp.employee_id:
-                found = True
-                employees.remove(emp)
-                print("Deleted successfully")
-                
-                break
+        connection = connect_database()
+        cursor = connection.cursor()
 
-        if not found:
+        query = """DELETE FROM employee WHERE employee_id = %s"""
+
+        cursor.execute(query,(employee_id,))
+
+        connection.commit()
+
+        if cursor.rowcount == 0:
+                    print("Employee not found")
+                    
+        cursor.close()
+        connection.close()
+
+        if cursor.rowcount == 0:
             print("Employee not found")
         print()
     elif choice == "6":
