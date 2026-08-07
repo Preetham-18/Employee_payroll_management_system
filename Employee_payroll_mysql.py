@@ -4,25 +4,13 @@ def connect_database():
     connection = mysql.connector.connect(
         host="localhost",
         user="root",
-        password="your_password_here",  # Replace with your MySQL root password
-        database="database_name_here"  # Replace with your database name
+        password="Your_password_here",  # Replace with your MySQL root password
+        database="Your_database_name_here"  # Replace with your database name
     )
     return connection
 
 connection = connect_database()
 cursor = connection.cursor()
-
-query = """
-SELECT * FROM employee
-"""
-
-cursor.execute(query)
-
-employees = cursor.fetchall()
-
-cursor.close()
-connection.close()
-
 
 
 class Employee:
@@ -56,8 +44,6 @@ def calculate_salary(emp):
 
         return bonus, tax, net_salary
 
-employees = []
-
 
 print("=" *40)
 print("EMPLOYEE PAYROLL MANAGEMENT SYSTEM")
@@ -82,28 +68,23 @@ while choice != "9":
         name = input("Enter employee name: ")
         age = int(input("Enter employee age:"))
         dept = input("Enter employee dept:")
-        designation = input("enter employee designation:")
+        designation = input("Enter employee designation:")
         salary = int(input("Enter employee salary:"))
-        connection = connect_database()
-        cursor = connection.cursor()
 
         query = """
         INSERT INTO employee (employee_id, name, age, dept, designation, salary)
         VALUES (%s, %s, %s, %s, %s, %s)
         """
 
-        cursor.execute(query, (employee_id, name, age, dept, designation, salary))
-
-        connection.commit()
-
-        cursor.close()
-        connection.close()
-        print("Employee Added successfully")
-        print("\n")
+        try:
+            cursor.execute(query, (employee_id, name, age, dept, designation, salary))
+            connection.commit()
+            print("Employee Added successfully")
+        except mysql.connector.Error as err:
+            print(err)
+        print()
     elif choice == "2":
        print("------VIEW EMPLOYEES------")
-       connection = connect_database()
-       cursor = connection.cursor()
 
        query = """SELECT * FROM employee"""
 
@@ -122,15 +103,11 @@ while choice != "9":
                 print("Designation: ", emp[4])
                 print("Salary: ", emp[5])
 
-       cursor.close()
-       connection.close()
-       print("\n")
+       print()
     
         
     elif choice == "3": 
         employee_id = int(input("Enter employee_id:"))   
-        connection = connect_database()
-        cursor = connection.cursor()
 
         query = """SELECT * FROM employee WHERE employee_id = %s """
 
@@ -148,14 +125,10 @@ while choice != "9":
             print("Designation: ", emp[4])
             print("Salary: ", emp[5])
 
-        cursor.close()
-        connection.close()
-        print("\n")
+        print()
     elif choice == "4":
         employee_id = int(input("Enter employee_id:"))
 
-        connection = connect_database()
-        cursor = connection.cursor()
 
         query = """SELECT * FROM employee WHERE employee_id = %s """
 
@@ -169,6 +142,7 @@ while choice != "9":
             print("2. Update age")
             print("3. Update Dept")
             print("4. Update salary")
+            print("5. Update designation")
 
             update_choice = input("Enter your choice:")
 
@@ -201,17 +175,19 @@ while choice != "9":
                 cursor.execute(query,(new_salary, employee_id))
                 connection.commit()
                 print("Salary updated successfully")
+            elif update_choice == "5":
+                new_designation = input("Enter new designation:")
+                query = """UPDATE employee SET designation = %s WHERE employee_id = %s"""
+
+                cursor.execute(query,(new_designation, employee_id))
+                connection.commit()
+                print("Designation updated successfully")
             else:
                 print("Invalid choice")
-
-            cursor.close()
-            connection.close()
             
-        print("\n")
+        print()
     elif choice == "5":
         employee_id = int(input("Enter employee_id:"))
-        connection = connect_database()
-        cursor = connection.cursor()
 
         query = """DELETE FROM employee WHERE employee_id = %s"""
 
@@ -220,20 +196,12 @@ while choice != "9":
         connection.commit()
 
         if cursor.rowcount == 0:
-                    print("Employee not found")
-
-        cursor.close()
-        connection.close()
-
-        if cursor.rowcount == 0:
             print("Employee not found")
         else:
             print("Employee deleted successfully")
-        print("\n")
+        print()
     elif choice == "6":
         employee_id = int(input("Enter employee_id:"))
-        connection = connect_database()
-        cursor = connection.cursor()
 
         query = """SELECT * FROM employee WHERE employee_id = %s"""
 
@@ -252,13 +220,8 @@ while choice != "9":
             print("Bonus: ", bonus)
             print("Tax: ", tax)
             print("Net Salary: ", net_salary)
-
-            cursor.close()
-            connection.close()
-        print("\n")
+        print()
     elif choice == "7":
-        connection = connect_database()
-        cursor = connection.cursor()
 
         query = """SELECT * FROM employee ORDER BY salary DESC LIMIT 1"""
 
@@ -270,19 +233,15 @@ while choice != "9":
         else:
             print("Employee_id:", employee[0])
             print("Name :", employee[1])
-            print("AGe:", employee[2])
+            print("Age:", employee[2])
             print("Dept:", employee[3])
             print("Designation:", employee[4])
             print("Salary:", employee[5])
 
-        cursor.close()
-        connection.close()
-        print("\n")
+        print()
     elif choice == "8":
         print("Dept.wise employees")
         dept = input("Enter dept name:")
-        connection = connect_database()
-        cursor = connection.cursor()
 
         query = """SELECT * FROM employee WHERE dept = %s"""
         cursor.execute(query,(dept,))
@@ -299,12 +258,13 @@ while choice != "9":
                 print("Designation: ", emp[4])
                 print("Salary: ", emp[5])
 
+        print()
+    elif choice == "9":
+
         cursor.close()
         connection.close()
-        print("\n")
-    elif choice == "9":
-        print("Thank you fro using Employee payroll management system")
-        print("\n")
+        print("Thank you for using Employee Payroll Management System")
+        print()
     else:
         print("Invalid choice")
      
