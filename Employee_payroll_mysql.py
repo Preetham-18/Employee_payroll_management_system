@@ -1,5 +1,20 @@
+"""Employee payroll management CLI with MySQL persistence.
+
+This script demonstrates a simple command-line interface that stores
+employee records in a MySQL `employee` table and provides basic CRUD
+operations plus salary calculations.
+
+Before running, update the database connection parameters in
+`connect_database()` and ensure the `employee` table exists.
+"""
+
 import mysql.connector
 
+"""Create and return a MySQL connection.
+
+    Update `host`, `user`, `password`, and `database` to match your
+    local MySQL configuration.
+    """
 def connect_database():
     connection = mysql.connector.connect(
         host="localhost",
@@ -9,11 +24,19 @@ def connect_database():
     )
     return connection
 
+
+# Establish a persistent connection and cursor used by the CLI loop
 connection = connect_database()
 cursor = connection.cursor()
 
 
 class Employee:
+    """Simple container for employee data retrieved from the database.
+
+    The class mirrors the columns stored in the `employee` table so the
+    same `calculate_salary()` function can be reused.
+    """
+
     def __init__(self, employee_id, name, age, dept, designation, salary):
         self.employee_id = employee_id
         self.name = name
@@ -24,25 +47,37 @@ class Employee:
 
 
 def calculate_salary(emp):
-        bonus = 0
-        tax = 0
-        net_salary = 0
+    """Calculate bonus, tax, and net salary for an employee.
 
-        if emp.salary >= 50000:
-            bonus = emp.salary*10/100
-        else:
-            bonus = emp.salary*5/100
+    Business rules:
+    - Bonus: 10% for salary >= 50000, otherwise 5%.
+    - Tax: 15% for salary >= 70000, 10% for >= 40000, otherwise 5%.
 
-        if emp.salary >= 70000:
-            tax = emp.salary*15/100
-        elif emp.salary >= 40000:
-            tax = emp.salary*10/100
-        else:
-            tax = emp.salary*5/100
+    Returns (bonus, tax, net_salary).
+    """
 
-        net_salary = emp.salary + bonus - tax
+    bonus = 0
+    tax = 0
+    net_salary = 0
 
-        return bonus, tax, net_salary
+    # Bonus calculation based on salary threshold
+    if emp.salary >= 50000:
+        bonus = emp.salary * 10 / 100
+    else:
+        bonus = emp.salary * 5 / 100
+
+    # Tax calculation based on salary bands
+    if emp.salary >= 70000:
+        tax = emp.salary * 15 / 100
+    elif emp.salary >= 40000:
+        tax = emp.salary * 10 / 100
+    else:
+        tax = emp.salary * 5 / 100
+
+    # Compute net salary
+    net_salary = emp.salary + bonus - tax
+
+    return bonus, tax, net_salary
 
 
 print("=" *40)
@@ -64,6 +99,7 @@ while choice != "9":
     choice = input(" Enter your choice: ")
 
     if choice == "1":
+        # Gather inputs and insert a new row into the `employee` table
         employee_id = int(input("Enter employee_id:"))
         name = input("Enter employee name: ")
         age = int(input("Enter employee age:"))
@@ -81,6 +117,7 @@ while choice != "9":
             connection.commit()
             print("Employee Added successfully")
         except mysql.connector.Error as err:
+            # Print DB error (e.g., duplicate primary key)
             print(err)
         print()
     elif choice == "2":
@@ -104,6 +141,7 @@ while choice != "9":
                 print("Salary: ", emp[5])
 
        print()
+           # Retrieve and display all employees from the database
     
         
     elif choice == "3": 
@@ -126,6 +164,7 @@ while choice != "9":
             print("Salary: ", emp[5])
 
         print()
+            # Search by `employee_id` and display the row if exists
     elif choice == "4":
         employee_id = int(input("Enter employee_id:"))
 
@@ -200,6 +239,8 @@ while choice != "9":
         else:
             print("Employee deleted successfully")
         print()
+                        # Offer a small update menu for the selected employee
+                # No row was deleted
     elif choice == "6":
         employee_id = int(input("Enter employee_id:"))
 
@@ -221,6 +262,7 @@ while choice != "9":
             print("Tax: ", tax)
             print("Net Salary: ", net_salary)
         print()
+            # Build an `Employee` object from the DB row and reuse salary logic
     elif choice == "7":
 
         query = """SELECT * FROM employee ORDER BY salary DESC LIMIT 1"""
@@ -239,6 +281,7 @@ while choice != "9":
             print("Salary:", employee[5])
 
         print()
+            # Query the single highest-paid employee using ORDER BY + LIMIT
     elif choice == "8":
         print("Dept.wise employees")
         dept = input("Enter dept name:")
@@ -259,6 +302,7 @@ while choice != "9":
                 print("Salary: ", emp[5])
 
         print()
+            # List all employees who belong to the requested department
     elif choice == "9":
 
         cursor.close()
@@ -267,6 +311,7 @@ while choice != "9":
         print()
     else:
         print("Invalid choice")
+            # Handle unexpected menu input
      
     
     
